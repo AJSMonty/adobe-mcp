@@ -1,5 +1,5 @@
 {
-  "name": "adobe-mcp",
+  "name": "@ajsmonty/adobe-mcp",
   "version": "1.1.0",
   "description": "MCP server for Adobe CC apps (AE, PS, AI, Premiere, Character Animator) on macOS",
   "type": "module",
@@ -28,5 +28,21 @@
     "illustrator",
     "premiere-pro",
     "extendscript"
-  ]
+  ],
+  "mcpName": "io.github.ajsmonty/adobe-mcp",
+  "files": [
+    "server.mjs",
+    "adapters/",
+    "core/",
+    "knowledge/",
+    "workflow/",
+    "scripts/",
+    "cep/",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
