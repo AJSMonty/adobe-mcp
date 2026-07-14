@@ -1,0 +1,32 @@
+{
+  "name": "adobe-mcp",
+  "version": "1.1.0",
+  "description": "MCP server for Adobe CC apps (AE, PS, AI, Premiere, Character Animator) on macOS",
+  "type": "module",
+  "bin": {
+    "adobe-mcp": "server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.1"
+  },
+  "license": "MIT",
+  "author": "AJ Montgomery",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AJSMonty/adobe-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "adobe",
+    "after-effects",
+    "photoshop",
+    "illustrator",
+    "premiere-pro",
+    "extendscript"
+  ]
+}

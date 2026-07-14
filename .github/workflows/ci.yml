@@ -1,0 +1,35 @@
+name: ci
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Syntax-check all modules
+        run: |
+          for f in $(git ls-files '*.mjs'); do node --check "$f"; done
+      - name: Knowledge base loads and matches
+        run: |
+          node -e "
+          import('./knowledge/knowledge.mjs').then(k => {
+            const n = k.loadLessons().length;
+            if (n < 1) throw new Error('no lessons loaded');
+            const m = k.matchError('ppro', 'Illegal Parameter type');
+            if (!m.length) throw new Error('matcher failed');
+            console.log('knowledge ok:', n, 'lessons');
+          });"
+      - name: Lessons file is valid JSONL
+        run: |
+          node -e "
+          const fs = require('fs');
+          const lines = fs.readFileSync('knowledge/lessons.jsonl','utf8').split('\n').filter(l => l.trim());
+          lines.forEach((l, i) => { try { JSON.parse(l); } catch (e) { throw new Error('bad JSONL line ' + (i+1)); } });
+          console.log('lessons.jsonl ok:', lines.length, 'entries');"
