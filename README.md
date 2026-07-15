@@ -37,29 +37,43 @@ The `scripts/` per-app libraries are the executable side of the same idea — di
 reusable skills (`list_scripts` / `run_script`): blueprint line extraction (PS), seamless
 wind loops and kinetic typography rigs (AE), one-call vertical Auto Reframe (Premiere).
 
-## Install (once)
+## Install
 
-1. Clone somewhere permanent:
-   ```bash
-   git clone https://github.com/AJSMonty/adobe-mcp.git ~/tools/adobe-mcp
-   ```
-2. **Node 18+** required: `node -v` (else `brew install node`).
-3. In the folder: `npm install`
-4. **In After Effects**: Preferences → Scripting & Expressions → enable **"Allow Scripts to Write Files and Access Network"**. Without this, results can't come back.
-5. First tool call will trigger a macOS **Automation** permission prompt (your terminal/Claude controlling After Effects) — click Allow. If you missed it: System Settings → Privacy & Security → Automation.
+### Option A — one-click for Claude Desktop & Cowork (no Node needed)
+
+1. Have the Adobe apps you want to drive installed. In After Effects, enable Preferences → Scripting & Expressions → **"Allow Scripts to Write Files and Access Network"**.
+2. Download the latest `adobe-mcp-x.y.z.mcpb` from [Releases](https://github.com/AJSMonty/adobe-mcp/releases) and **double-click it** (or drag it onto Claude Desktop → Settings → Extensions). Claude Desktop bundles its own Node runtime — nothing else to install.
+3. Use it. The first tool call for each app triggers a one-time macOS **Automation** permission prompt — click Allow.
+
+### Option B — any MCP client via npm
+
+Requires Node 18+ installed system-wide ([nodejs.org](https://nodejs.org) installer or `brew install node` — note GUI apps often cannot see nvm-managed installs). No clone, no `npm install`: every client config below just runs
+
+```
+npx -y @ajsmonty/adobe-mcp
+```
+
+### Option C — from source (contributors)
+
+```bash
+git clone https://github.com/AJSMonty/adobe-mcp.git ~/tools/adobe-mcp
+cd ~/tools/adobe-mcp && npm install
+# point your client at: node ~/tools/adobe-mcp/server.mjs
+```
+
+**Premiere Pro only:** the `ppro_*` tools need the bundled CEP panel installed once — copy `cep/mcp-bridge` to `~/Library/Application Support/Adobe/CEP/extensions/` and enable `PlayerDebugMode` (see Notes), then open Window → Extensions → MCP Bridge inside Premiere.
 
 ## Hook up to your MCP client
 
 This is a standard **stdio MCP server** — any MCP-capable client can drive it (Claude Code,
 Claude Desktop, Cursor, Windsurf, VS Code Copilot agent mode, Zed, Cline, Goose, ...).
 Everything below is the same one-liner expressed in each client's config format:
-run `node /ABSOLUTE/PATH/tools/adobe-mcp/server.mjs` over stdio. Use absolute paths —
-most clients do not expand `~`.
+run `npx -y @ajsmonty/adobe-mcp` over stdio (or `node .../server.mjs` for a source checkout).
 
 ### Claude Code
 
 ```bash
-claude mcp add --scope user adobe -- node ~/tools/adobe-mcp/server.mjs
+claude mcp add --scope user adobe -- npx -y @ajsmonty/adobe-mcp
 ```
 
 `--scope user` = available in all projects; use `--scope project` from inside a repo to share via `.mcp.json` with your team. Verify: `claude mcp list`.
@@ -72,8 +86,8 @@ Settings → Developer → Edit Config, add to `claude_desktop_config.json`:
 {
   "mcpServers": {
     "adobe": {
-      "command": "node",
-      "args": ["/Users/YOUR_USER/tools/adobe-mcp/server.mjs"]
+      "command": "npx",
+      "args": ["-y", "@ajsmonty/adobe-mcp"]
     }
   }
 }
@@ -89,8 +103,8 @@ Settings → MCP → Add server, or edit `~/.cursor/mcp.json` (global) / `.curso
 {
   "mcpServers": {
     "adobe": {
-      "command": "node",
-      "args": ["/Users/YOUR_USER/tools/adobe-mcp/server.mjs"]
+      "command": "npx",
+      "args": ["-y", "@ajsmonty/adobe-mcp"]
     }
   }
 }
@@ -107,8 +121,8 @@ Enable it under Settings → MCP, then use Agent mode (composer) — tool calls 
   "servers": {
     "adobe": {
       "type": "stdio",
-      "command": "node",
-      "args": ["/Users/YOUR_USER/tools/adobe-mcp/server.mjs"]
+      "command": "npx",
+      "args": ["-y", "@ajsmonty/adobe-mcp"]
     }
   }
 }
@@ -120,7 +134,7 @@ Enable it under Settings → MCP, then use Agent mode (composer) — tool calls 
 
 ### Anything else
 
-If the client supports MCP over stdio, point it at `node .../server.mjs` and you are done.
+If the client supports MCP over stdio, point it at `npx -y @ajsmonty/adobe-mcp` and you are done.
 
 ### Client caveats
 

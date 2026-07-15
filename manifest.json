@@ -1,0 +1,58 @@
+{
+  "manifest_version": "0.2",
+  "name": "adobe-mcp",
+  "display_name": "Adobe Creative Cloud",
+  "version": "1.1.0",
+  "description": "Drive After Effects, Photoshop, Illustrator, Premiere Pro and Character Animator from Claude \u2014 scripting bridges, cross-app handoffs, inline previews, and a self-learning gotcha knowledge base.",
+  "long_description": "Bridges MCP tool calls into each Adobe app's scripting engine (ExtendScript via AppleScript; Premiere via a CEP panel). Includes cross-app workflow tools (shared asset registry, layered PSD/AI handoffs into After Effects), per-app script libraries, inline visual previews so the model can see its work, and a knowledge base that auto-surfaces known gotchas on matching errors and learns new ones at runtime. Requires the Adobe apps themselves; macOS only. First tool call per app triggers a macOS Automation permission prompt \u2014 click Allow.",
+  "author": {
+    "name": "AJ Montgomery",
+    "url": "https://github.com/AJSMonty"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AJSMonty/adobe-mcp"
+  },
+  "homepage": "https://github.com/AJSMonty/adobe-mcp",
+  "support": "https://github.com/AJSMonty/adobe-mcp/issues",
+  "license": "MIT",
+  "keywords": [
+    "adobe",
+    "after-effects",
+    "photoshop",
+    "illustrator",
+    "premiere-pro",
+    "extendscript",
+    "creative-cloud"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "server.mjs",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server.mjs"
+      ],
+      "env": {
+        "ADOBE_MCP_WORKSPACE": "${user_config.workspace}"
+      }
+    }
+  },
+  "compatibility": {
+    "platforms": [
+      "darwin"
+    ],
+    "runtimes": {
+      "node": ">=18"
+    }
+  },
+  "user_config": {
+    "workspace": {
+      "type": "directory",
+      "title": "Asset workspace",
+      "description": "Where rendered assets, the asset registry and learned lessons are stored.",
+      "default": "${HOME}/AdobeMCP",
+      "required": false
+    }
+  }
+}
