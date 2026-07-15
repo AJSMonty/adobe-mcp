@@ -45,6 +45,8 @@ wind loops and kinetic typography rigs (AE), one-call vertical Auto Reframe (Pre
 2. Download the latest `adobe-mcp-x.y.z.mcpb` from [Releases](https://github.com/AJSMonty/adobe-mcp/releases) and **double-click it** (or drag it onto Claude Desktop → Settings → Extensions). Claude Desktop bundles its own Node runtime — nothing else to install.
 3. Use it. The first tool call for each app triggers a one-time macOS **Automation** permission prompt — click Allow.
 
+**Upgrading?** Remove the old version first (Settings → Extensions → Adobe Creative Cloud → Uninstall), then install the new `.mcpb` — in-place installs over an existing version can leave stale files behind while reporting the new version number.
+
 ### Option B — any MCP client via npm
 
 Requires Node 18+ installed system-wide ([nodejs.org](https://nodejs.org) installer or `brew install node` — note GUI apps often cannot see nvm-managed installs). No clone, no `npm install`: every client config below just runs
