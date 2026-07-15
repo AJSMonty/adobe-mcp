@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "adobe-mcp",
   "display_name": "Adobe Creative Cloud",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Drive After Effects, Photoshop, Illustrator, Premiere Pro and Character Animator from Claude \u2014 scripting bridges, cross-app handoffs, inline previews, and a self-learning gotcha knowledge base.",
   "long_description": "Bridges MCP tool calls into each Adobe app's scripting engine (ExtendScript via AppleScript; Premiere via a CEP panel). Includes cross-app workflow tools (shared asset registry, layered PSD/AI handoffs into After Effects), per-app script libraries, inline visual previews so the model can see its work, and a knowledge base that auto-surfaces known gotchas on matching errors and learns new ones at runtime. Requires the Adobe apps themselves; macOS only. First tool call per app triggers a macOS Automation permission prompt \u2014 click Allow.",
   "author": {
