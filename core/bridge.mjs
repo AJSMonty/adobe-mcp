@@ -7,14 +7,13 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { logError, matchError, hintBlock } from "../knowledge/knowledge.mjs";
+import { WORKSPACE } from "./workspace.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const HARNESS = fs.readFileSync(path.join(__dirname, "harness.jsx"), "utf8");
 
-export const WORKSPACE =
-  process.env.ADOBE_MCP_WORKSPACE || path.join(os.homedir(), "AdobeMCP");
+export { WORKSPACE };
 export const PPRO_BRIDGE_DIR = path.join(WORKSPACE, "ppro-bridge");
-fs.mkdirSync(WORKSPACE, { recursive: true });
 fs.mkdirSync(PPRO_BRIDGE_DIR, { recursive: true });
 
 // ---------------------------------------------------------------------------

@@ -15,10 +15,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { WORKSPACE } from "../core/workspace.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const WORKSPACE =
-  process.env.ADOBE_MCP_WORKSPACE || path.join(os.homedir(), "AdobeMCP");
 const SEED_PATH = path.join(__dirname, "lessons.jsonl");
 const LEARNED_PATH = path.join(WORKSPACE, "learned.jsonl");
 const ERROR_LOG = path.join(WORKSPACE, "error-log.jsonl");
