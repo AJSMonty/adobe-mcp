@@ -6,8 +6,10 @@
  *   AE / Photoshop / Illustrator → osascript (DoScript / do javascript) → ExtendScript
  *   Premiere Pro                 → mcp-bridge CEP panel (command-file handoff)
  *   Character Animator           → integrated around (PSD puppet authoring via Photoshop)
+ *   Blender                      → Python (bpy) via live add-on socket or headless background process
+ *   Substance 3D Painter         → Python via remote scripting (HTTP, port 60041)
  *
- * Adapters register namespaced tools (ae_*, ps_*, ai_*, ppro_*, ch_*), plus cross-app
+ * Adapters register namespaced tools (ae_*, ps_*, ai_*, ppro_*, ch_*, blender_*, substance_*), plus cross-app
  * workflow tools (asset registry, layered handoffs, per-app script libraries).
  */
 
@@ -19,11 +21,14 @@ import { register as registerPS } from "./adapters/ps.mjs";
 import { register as registerAI } from "./adapters/ai.mjs";
 import { register as registerPPRO } from "./adapters/ppro.mjs";
 import { register as registerCH } from "./adapters/ch.mjs";
+import { register as registerBlender } from "./adapters/blender.mjs";
+import { register as registerSubstance } from "./adapters/substance.mjs";
+import { register as registerVFX } from "./workflow/vfx.mjs";
 import { register as registerWorkflow, makeRegisterAsset } from "./workflow/workflow.mjs";
 import { register as registerKnowledge, instructionsDigest } from "./knowledge/knowledge.mjs";
 
 const server = new McpServer(
-  { name: "adobe-mcp", version: "1.1.0" },
+  { name: "adobe-mcp", version: "1.2.0" },
   { instructions: instructionsDigest() }
 );
 
@@ -43,9 +48,12 @@ registerPS(server, ctx);
 registerAI(server, ctx);
 registerPPRO(server, ctx);
 registerCH(server, ctx);
+registerBlender(server, ctx);
+registerSubstance(server, ctx);
+registerVFX(server, ctx);
 registerWorkflow(server, ctx);
 registerKnowledge(server, ctx);
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
-console.error("adobe-mcp ready (ae, ps, ai, ppro, ch + workflow + knowledge)");
+console.error("adobe-mcp ready (ae, ps, ai, ppro, ch, blender, substance + workflow + vfx + knowledge)");

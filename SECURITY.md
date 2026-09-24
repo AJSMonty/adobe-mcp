@@ -12,6 +12,11 @@ echo every script body in the conversation.
 Additional notes:
 
 - The server binds to **stdio only** — it opens no network ports and has no remote surface.
+- **Exception: the optional 3D bridges are local ports.** The Blender add-on
+  (`bridges/blender/adobe_mcp_bridge.py`) listens on `127.0.0.1:9877`, and Substance 3D Painter's
+  own remote scripting (`--enable-remote-scripting`) listens on port 60041. Neither is
+  authenticated: any local process that can reach the port can run Python in that app. Enable
+  them only while you use them. Blender background mode opens no port.
 - The workspace (`~/AdobeMCP` by default) collects rendered assets, an error log
   (`error-log.jsonl`, includes failed script snippets) and learned lessons. Nothing is
   transmitted anywhere by this server.

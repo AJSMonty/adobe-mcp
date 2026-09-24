@@ -1,6 +1,6 @@
 # adobe-mcp — Adobe Creative Cloud MCP server (macOS)
 
-Drives After Effects, Photoshop, Illustrator, Premiere Pro (and Character Animator puppet authoring) from Claude. See ROADMAP.md for the full tool matrix and what is next.
+Drives After Effects, Photoshop, Illustrator, Premiere Pro (and Character Animator puppet authoring) from Claude, plus Blender and Substance 3D Painter for 3D look-dev and cinematic animation. See ROADMAP.md for the full tool matrix and what is next.
 Bridge: MCP client → this server → AppleScript `DoScript` → AE → temp result file → back.
 
 ## Tools
@@ -12,6 +12,55 @@ Bridge: MCP client → this server → AppleScript `DoScript` → AE → temp re
 | `save_frame` | Render a comp frame to PNG, returned inline so Claude can *see* its work. |
 | `list_ae_scripts` | List `.jsx`/`.jsxbin` tools in `scripts/` with descriptions from header comments. |
 | `run_ae_script` | Execute a library script, like File → Scripts → Run Script File. |
+
+## 3D & cinematic VFX pipeline (Blender + Substance 3D Painter)
+
+Two Python bridges extend the server beyond ExtendScript so one agent can take a shot from
+blocking to final composite:
+
+```
+                  ┌──► Blender ──────────► Python (bpy): live add-on socket :9877, or headless `blender -b`
+MCP client ───────┼──► Substance Painter ─► Python: remote scripting HTTP :60041 (/run.json)
+                  └──► After Effects ────► ExtendScript via osascript (as above)
+```
+
+| Tool | Purpose |
+|---|---|
+| `blender_run_python` | Run bpy code (`result = ...` returns JSON). `mode`: `live` (running Blender), `background` (headless, optional `blend_file` / `save_as`), `auto`. |
+| `blender_get_state` | Scene summary: frame range, fps, engine, motion blur, camera lens/DoF, passes, every object. |
+| `blender_render_frame` | Render a low-sample preview frame through the scene camera, returned inline. |
+| `blender_render_animation` | Render the frame range with the scene's output settings and register the output as an asset. |
+| `substance_run_python` | Run Python in Substance 3D Painter (`substance_painter.*`). |
+| `substance_get_state` | Texture sets, resolutions, stacks, channels, root layers. |
+| `substance_bake_mesh_maps` | Start the async mesh-map bake (curvature/AO feed smart materials). |
+| `substance_export_textures` | Export PBR maps with a preset (default *PBR Metallic Roughness*); registers each map. |
+| `vfx_plan_creature_shot` | Turns a brief ("a photo-real dinosaur walking past the camera while turning its neck") into physically derived timing plus the ordered tool calls for every stage. |
+
+Library scripts (run with `run_script`, parameters via `params`):
+
+- `scripts/blender/Creature_Walk_Cinematic.py`: a heavy-biped walk timed from physics. Speed comes
+  from the Froude number, stride from Alexander (1976), and feet stay planted with zero slide. The
+  neck and tail lag 3 frames per joint, the head is gaze-stabilised and turns toward the lens, and
+  the chest breathes. The camera is a handheld rig with operator lag and footfall impact shake. The
+  render setup is Cycles with a 180° shutter, a shadow catcher, and beauty/shadow/mist PNG sequences
+  plus a multilayer EXR. Tested headless against Blender 5.0.1 (`bpy`); it also handles the 4.x APIs.
+- `scripts/substance/Creature_Skin_LookDev.py`: optional bake, then a matte "aged scales" base,
+  a cavity-masked wetness layer, and glossy eye/mouth sets, all in one undo step. Optional export.
+- `scripts/ae/Cinematic_3D_Composite.jsx`: imports the passes, multiplies the shadow, adds a
+  precomped edge light wrap, depth haze from mist, an optional depth lens blur, CG softening, and
+  grain on the CG only.
+
+Setup:
+
+- **Blender live mode**: Edit → Preferences → Add-ons → Install from Disk →
+  `bridges/blender/adobe_mcp_bridge.py`, then enable it (listens on `127.0.0.1:9877`; override with
+  `BLENDER_MCP_PORT`). **Background mode** needs no add-on; it finds `/Applications/Blender*.app`
+  or `blender` on `PATH` (override with `BLENDER_PATH`).
+- **Substance 3D Painter**: launch with remote scripting enabled:
+  `open -a "Adobe Substance 3D Painter" --args --enable-remote-scripting` (port override:
+  `SUBSTANCE_PAINTER_PORT`).
+- Both bridges are local-only and unauthenticated: anything on the machine that can reach the
+  port can run Python in the app. Disable the Blender add-on or quit Painter when you're done.
 
 ## Knowledge system (the server learns as it goes)
 

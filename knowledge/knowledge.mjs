@@ -126,14 +126,16 @@ export function hintBlock(lessons) {
 export function instructionsDigest() {
   const n = loadLessons().length;
   return [
-    "adobe-mcp drives AE, Photoshop, Illustrator, Premiere and CH puppet authoring via ExtendScript.",
+    "adobe-mcp drives AE, Photoshop, Illustrator, Premiere and CH puppet authoring via ExtendScript, plus Blender (bpy) and Substance 3D Painter (Python) for 3D look-dev and cinematic animation.",
     "",
     "WORKING RULES (learned from real sessions):",
     "1. TARGET DOCUMENTS EXPLICITLY. PS/AI active document can silently change between calls — start every PS/AI script with app.activeDocument = app.documents.getByName(...). Exports always act on the ACTIVE document.",
     "2. VERIFY VISUALLY AT EVERY STAGE. Use ae_save_frame / ps_save_preview / ai_save_preview after each meaningful change, and verify final renders by extracting frames from the output file. For seamless loops, diff first vs last frame.",
     "3. A RENDER TIMEOUT IS NOT A FAILED RENDER. If ae_render_comp/exports time out, check the output file (stable size, right duration) before re-running.",
     "4. ES3 ONLY inside the apps: no JSON, let/const, arrows, Array.map. Collections are 1-indexed in AE.",
-    `5. CONSULT THE KNOWLEDGE BASE: ${n} lessons loaded. knowledge_search before attempting something unusual; failed scripts auto-surface matching lessons. When you solve a NEW gotcha (an error whose fix wasn't suggested), record it with knowledge_add so the server learns.`,
+    "5. PYTHON APPS (blender_*, substance_*): code runs as a module body; assign `result` to return data. Guard every lookup (bpy.data.objects.get, substance_painter.project.is_open). Painter baking is async — never block its main thread waiting.",
+    "6. RESPECT PHYSICS IN ANIMATION: work in meters/seconds at the real frame rate; derive gait timing from size (vfx_plan_creature_shot), plant feet with zero slide, lag secondary chains (neck/tail) a few frames per joint, bake a 180° shutter into renders, and match lens, grain and softness to the plate in comp.",
+    `7. CONSULT THE KNOWLEDGE BASE: ${n} lessons loaded. knowledge_search before attempting something unusual; failed scripts auto-surface matching lessons. When you solve a NEW gotcha (an error whose fix wasn't suggested), record it with knowledge_add so the server learns.`,
   ].join("\n");
 }
 
@@ -144,11 +146,11 @@ export function register(server, { text, errText }) {
       title: "Search the adobe-mcp knowledge base",
       description:
         "Search accumulated scripting lessons/gotchas for the Adobe apps (seeded + learned at runtime). " +
-        "Query by keywords, optionally filtered by app (ae/ps/ai/ppro/ch). Empty query lists everything. " +
+        "Query by keywords, optionally filtered by app (ae/ps/ai/ppro/ch/blender/substance). Empty query lists everything. " +
         "Consult this BEFORE attempting unusual scripting; it is cheaper than rediscovering a gotcha.",
       inputSchema: {
         query: z.string().optional().describe("Keywords (empty = list all)."),
-        app: z.string().optional().describe("Filter: ae, ps, ai, ppro, ch."),
+        app: z.string().optional().describe("Filter: ae, ps, ai, ppro, ch, blender, substance."),
       },
     },
     async ({ query, app }) => {
@@ -176,7 +178,7 @@ export function register(server, { text, errText }) {
         "`match` keywords are matched against future error text to auto-surface the lesson — choose distinctive " +
         "substrings of the error message (e.g. 'Illegal Parameter type').",
       inputSchema: {
-        app: z.string().describe("ae, ps, ai, ppro, ch, or 'any'."),
+        app: z.string().describe("ae, ps, ai, ppro, ch, blender, substance, or 'any'."),
         title: z.string().describe("Short name for the lesson."),
         lesson: z.string().describe("The gotcha and its fix, 1-3 sentences."),
         match: z
