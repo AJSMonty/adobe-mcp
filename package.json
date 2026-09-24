@@ -1,7 +1,7 @@
 {
   "name": "@ajsmonty/adobe-mcp",
-  "version": "1.1.2",
-  "description": "MCP server for Adobe CC apps (AE, PS, AI, Premiere, Character Animator) on macOS",
+  "version": "1.2.0",
+  "description": "MCP server for Adobe CC apps (AE, PS, AI, Premiere, Character Animator), Blender and Substance 3D Painter",
   "type": "module",
   "bin": {
     "adobe-mcp": "server.mjs"
@@ -27,7 +27,10 @@
     "photoshop",
     "illustrator",
     "premiere-pro",
-    "extendscript"
+    "extendscript",
+    "blender",
+    "substance-3d-painter",
+    "vfx"
   ],
   "mcpName": "io.github.AJSMonty/adobe-mcp",
   "files": [
@@ -36,6 +39,7 @@
     "core/",
     "knowledge/",
     "workflow/",
+    "bridges/",
     "scripts/",
     "cep/",
     "README.md",
