@@ -18,8 +18,12 @@ Additional notes:
   authenticated: any local process that can reach the port can run Python in that app. Enable
   them only while you use them. Blender background mode opens no port.
 - The workspace (`~/AdobeMCP` by default) collects rendered assets, an error log
-  (`error-log.jsonl`, includes failed script snippets) and learned lessons. Nothing is
+  (`error-log.jsonl`, includes failed script snippets) and learned lessons. Nothing from it is
   transmitted anywhere by this server.
+- **Outbound requests:** only the texture-library tools (`texture_search`, `texture_download`,
+  `blender_apply_texture` / `blender_set_hdri` with a library id) make network calls, and only
+  plain GETs to `api.polyhaven.com`, `ambientcg.com` and their download CDNs. They send search
+  keywords and asset ids, never your files or scene data.
 - Library scripts under `scripts/` run with the same privileges; only add scripts you trust.
 
 ## Reporting a vulnerability

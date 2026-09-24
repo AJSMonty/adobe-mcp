@@ -36,6 +36,19 @@ MCP client ───────┼──► Substance Painter ─► Python: re
 | `substance_export_textures` | Export PBR maps with a preset (default *PBR Metallic Roughness*); registers each map. |
 | `vfx_plan_creature_shot` | Turns a brief ("a photo-real dinosaur walking past the camera while turning its neck") into physically derived timing plus the ordered tool calls for every stage. |
 
+Free CC0 texture & HDRI libraries ([Poly Haven](https://polyhaven.com), [ambientCG](https://ambientcg.com)):
+everything both publish is public domain, so it's free for commercial work with no attribution.
+
+| Tool | Purpose |
+|---|---|
+| `texture_search` | Search both libraries for PBR materials (`type=texture`) or HDRIs (`type=hdri`); returns ids, tags, thumbnails. |
+| `texture_download` | Download one asset at 1k–8k into `<workspace>/textures` (cached), maps renamed `<id>_BaseColor/_Roughness/_Normal/_Height/_Metallic/_ARM/_AO`. |
+| `blender_apply_texture` | Build a Principled material from a library asset or a local map folder (e.g. a Substance export) and assign it: correct colour spaces, OpenGL normals, true displacement, ARM unpacking, real-world `tile_m` scale, tri-planar projection for meshes without UVs. |
+| `blender_set_hdri` | Light the scene with a library HDRI (strength, rotation) to match the plate. |
+
+The downloaded folder also works as `texture_dir` for `Creature_Walk_Cinematic.py`. Set
+`POLYHAVEN_API` / `AMBIENTCG_API` to point at a mirror if you need to.
+
 Library scripts (run with `run_script`, parameters via `params`):
 
 - `scripts/blender/Creature_Walk_Cinematic.py`: a heavy-biped walk timed from physics. Speed comes

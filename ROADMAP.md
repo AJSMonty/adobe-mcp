@@ -9,6 +9,7 @@
 - **Character Animator**: ch_build_puppet (rig-ready PSD via PS, full auto-rig taxonomy), ch_taxonomy.
 - **Blender**: run_python (live add-on / headless), get_state, render_frame, render_animation; creature-walk cinematic library script.
 - **Substance 3D Painter**: run_python (remote scripting), get_state, bake_mesh_maps, export_textures; creature skin look-dev script.
+- **Texture libraries**: texture_search / texture_download (Poly Haven + ambientCG, CC0, cached), blender_apply_texture, blender_set_hdri.
 - **VFX pipeline**: vfx_plan_creature_shot (physics-derived timing → Blender/Substance/AE tool calls), AE 3D composite script.
 - **Workflow**: shared asset registry (workflow_assets), layered handoffs (handoff_import_to_ae, handoff_place_in_ps), per-app script libraries (list_scripts / run_script).
 

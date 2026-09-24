@@ -86,6 +86,16 @@ export function register(server, { text, errText }) {
               verify: { tool: "blender_render_frame", args: { blend_file: blend, frame: Math.round(params.duration_s * fps * 0.55) } },
             },
             {
+              stage: "2b. Light & dress to match the plate (free CC0 libraries)",
+              tool: "texture_search",
+              args: { type: "hdri", query: "<sky that matches the plate: e.g. 'partly cloudy afternoon'>" },
+              then: [
+                { tool: "blender_set_hdri", args: { source: "<from search>", id: "<from search>", blend_file: blend, save_as: blend, mode: "background", rotation_deg: 0 } },
+                { tool: "blender_apply_texture", args: { objects: ["<set-dressing objects>"], source: "<from texture_search query='forest ground'>", id: "<id>", blend_file: blend, save_as: blend, mode: "background", tile_m: 2 } },
+              ],
+              note: "Rotate the HDRI until CG shadow direction matches the plate. The ground is a shadow catcher, so only texture set-dressing and props.",
+            },
+            {
               stage: "3. Texture & materialize (Substance 3D Painter, project with the hero mesh open)",
               tool: "run_script",
               args: {

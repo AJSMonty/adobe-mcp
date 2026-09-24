@@ -8,6 +8,7 @@
  *   Character Animator           → integrated around (PSD puppet authoring via Photoshop)
  *   Blender                      → Python (bpy) via live add-on socket or headless background process
  *   Substance 3D Painter         → Python via remote scripting (HTTP, port 60041)
+ *   Poly Haven / ambientCG       → free CC0 texture + HDRI libraries (HTTPS APIs, local cache)
  *
  * Adapters register namespaced tools (ae_*, ps_*, ai_*, ppro_*, ch_*, blender_*, substance_*), plus cross-app
  * workflow tools (asset registry, layered handoffs, per-app script libraries).
@@ -23,6 +24,7 @@ import { register as registerPPRO } from "./adapters/ppro.mjs";
 import { register as registerCH } from "./adapters/ch.mjs";
 import { register as registerBlender } from "./adapters/blender.mjs";
 import { register as registerSubstance } from "./adapters/substance.mjs";
+import { register as registerTexLib } from "./adapters/texlib.mjs";
 import { register as registerVFX } from "./workflow/vfx.mjs";
 import { register as registerWorkflow, makeRegisterAsset } from "./workflow/workflow.mjs";
 import { register as registerKnowledge, instructionsDigest } from "./knowledge/knowledge.mjs";
@@ -50,10 +52,11 @@ registerPPRO(server, ctx);
 registerCH(server, ctx);
 registerBlender(server, ctx);
 registerSubstance(server, ctx);
+registerTexLib(server, ctx);
 registerVFX(server, ctx);
 registerWorkflow(server, ctx);
 registerKnowledge(server, ctx);
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
-console.error("adobe-mcp ready (ae, ps, ai, ppro, ch, blender, substance + workflow + vfx + knowledge)");
+console.error("adobe-mcp ready (ae, ps, ai, ppro, ch, blender, substance, texture libraries + workflow + vfx + knowledge)");

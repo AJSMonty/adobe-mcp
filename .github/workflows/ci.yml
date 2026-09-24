@@ -33,6 +33,25 @@ jobs:
           const lines = fs.readFileSync('knowledge/lessons.jsonl','utf8').split('\n').filter(l => l.trim());
           lines.forEach((l, i) => { try { JSON.parse(l); } catch (e) { throw new Error('bad JSONL line ' + (i+1)); } });
           console.log('lessons.jsonl ok:', lines.length, 'entries');"
+      - name: Texture library map classifier + zip reader (offline)
+        run: |
+          python3 -c "
+          import io, zipfile
+          b = io.BytesIO(); z = zipfile.ZipFile(b, 'w', zipfile.ZIP_DEFLATED)
+          z.writestr('Metal032_2K-PNG_Color.png', b'x' * 500); z.writestr('Metal032_2K-PNG_NormalDX.png', b'd'); z.close()
+          open('/tmp/t.zip', 'wb').write(b.getvalue())"
+          node -e "
+          import('./core/texlib.mjs').then(t => {
+            const fs = require('fs');
+            const files = t.unzip(fs.readFileSync('/tmp/t.zip'));
+            if (files.length !== 2 || files[0].data.length !== 500) throw new Error('unzip failed');
+            const cases = { 'Metal032_2K-PNG_Color.png': 'BaseColor', 'Metal032_2K-PNG_NormalDX.png': null,
+              'Rock030_2K-JPG_NormalGL.jpg': 'Normal', 'Rock030_2K-JPG_AmbientOcclusion.jpg': 'AO' };
+            for (const [f, want] of Object.entries(cases)) if (t.classifyAmbientFile(f) !== want) throw new Error(f + ' -> ' + t.classifyAmbientFile(f));
+            const ph = { Diffuse: 'BaseColor', nor_gl: 'Normal', nor_dx: null, Rough: 'Roughness', Displacement: 'Height', arm: 'ARM', AO: 'AO', blend: null };
+            for (const [k, want] of Object.entries(ph)) if (t.classifyMap(k) !== want) throw new Error(k + ' -> ' + t.classifyMap(k));
+            console.log('texlib ok');
+          });"
       - name: Python bridges and library scripts compile
         run: |
           for f in $(git ls-files '*.py'); do python3 -m py_compile "$f"; done

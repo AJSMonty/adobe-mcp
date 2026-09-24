@@ -135,7 +135,8 @@ export function instructionsDigest() {
     "4. ES3 ONLY inside the apps: no JSON, let/const, arrows, Array.map. Collections are 1-indexed in AE.",
     "5. PYTHON APPS (blender_*, substance_*): code runs as a module body; assign `result` to return data. Guard every lookup (bpy.data.objects.get, substance_painter.project.is_open). Painter baking is async — never block its main thread waiting.",
     "6. RESPECT PHYSICS IN ANIMATION: work in meters/seconds at the real frame rate; derive gait timing from size (vfx_plan_creature_shot), plant feet with zero slide, lag secondary chains (neck/tail) a few frames per joint, bake a 180° shutter into renders, and match lens, grain and softness to the plate in comp.",
-    `7. CONSULT THE KNOWLEDGE BASE: ${n} lessons loaded. knowledge_search before attempting something unusual; failed scripts auto-surface matching lessons. When you solve a NEW gotcha (an error whose fix wasn't suggested), record it with knowledge_add so the server learns.`,
+    "7. FREE CC0 LIBRARIES: texture_search / texture_download (Poly Haven, ambientCG) for PBR materials and HDRIs; blender_apply_texture and blender_set_hdri wire them into Blender. Prefer these to inventing procedural textures for photo-real work.",
+    `8. CONSULT THE KNOWLEDGE BASE: ${n} lessons loaded. knowledge_search before attempting something unusual; failed scripts auto-surface matching lessons. When you solve a NEW gotcha (an error whose fix wasn't suggested), record it with knowledge_add so the server learns.`,
   ].join("\n");
 }
 
