@@ -133,13 +133,14 @@ if s.camera is None:
     raise RuntimeError("Scene has no active camera (set scene.camera)")
 saved = dict(fp=r.filepath, fmt=r.image_settings.file_format, pct=r.resolution_percentage,
              frame=s.frame_current, mode=r.image_settings.color_mode,
-             media=getattr(r.image_settings, "media_type", None))
+             media=getattr(r.image_settings, "media_type", None), comp=r.use_compositing)
 cy_samples = s.cycles.samples if r.engine == "CYCLES" else None
 ee = getattr(s, "eevee", None)
 ee_samples = ee.taa_render_samples if ee is not None and hasattr(ee, "taa_render_samples") else None
 try:
     frame = ${frame === undefined ? "s.frame_current" : Number(frame)}
     s.frame_set(frame)
+    r.use_compositing = False   # File Output nodes would write the preview into the pass sequences
     r.resolution_percentage = max(1, min(100, int(100 * ${Number(max_width ?? 960)} / max(1, r.resolution_x))))
     if cy_samples is not None: s.cycles.samples = ${Number(samples ?? 16)}
     if ee_samples is not None: ee.taa_render_samples = ${Number(samples ?? 16)}
@@ -153,6 +154,7 @@ try:
               "size": [r.resolution_x * r.resolution_percentage // 100, r.resolution_y * r.resolution_percentage // 100]}
 finally:
     r.filepath = saved["fp"]
+    r.use_compositing = saved["comp"]
     if saved["media"] is not None:
         r.image_settings.media_type = saved["media"]
     r.image_settings.file_format = saved["fmt"]

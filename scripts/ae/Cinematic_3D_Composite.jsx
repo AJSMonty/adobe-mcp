@@ -32,6 +32,9 @@
     note("param '" + name + "' not found on " + effect.name);
     return false;
   }
+  // Layer-reference params store an index; set them only after the stack stops changing.
+  var layerRefs = [];
+  function setLayerRef(effect, name, layer) { layerRefs.push({ effect: effect, name: name, layer: layer }); }
   function layerNamed(comp, name) {
     for (var i = 1; i <= comp.numLayers; i++) if (comp.layer(i).name === name) return comp.layer(i);
     return null;
@@ -39,7 +42,8 @@
   function firstPng(folder) {
     var f = new Folder(folder);
     if (!f.exists) return null;
-    var files = f.getFiles("*.png");
+    var all = f.getFiles("*.png"), files = [];
+    for (var i = 0; i < all.length; i++) if (/\d+\.png$/i.test(all[i].name)) files.push(all[i]);
     if (!files.length) return null;
     files.sort(function (a, b) { return a.name < b.name ? -1 : 1; });
     return files[0];
@@ -106,7 +110,7 @@
   if (mist && lensR > 0) {
     var lb = beauty.Effects.addProperty("ADBE Camera Lens Blur");
     setP(lb, "Blur Radius", lensR);
-    setP(lb, "Layer", mist.index);
+    setLayerRef(lb, "Layer", mist);
     setP(lb, "Blur Focal Distance", Math.round(255 * opt("focus_value", 0.1)));
     note("depth lens blur r=" + lensR + " from mist pass");
   }
@@ -124,7 +128,7 @@
     hazeSolid.opacity.setValue(opt("haze_amount", 35));
     // keep the haze on the CG only
     var hazeClip = hazeSolid.Effects.addProperty("ADBE Set Matte3");
-    setP(hazeClip, "Take Matte From Layer", beauty.index);
+    setLayerRef(hazeClip, "Take Matte From Layer", beauty);
     mist.enabled = false;
     note("depth haze " + opt("haze_amount", 35) + "% from mist pass");
   }
@@ -151,6 +155,8 @@
     wrapLayer.opacity.setValue(opt("wrap_opacity", 55));
     note("light wrap precomp (" + opt("wrap_px", 18) + " px edge, screen " + opt("wrap_opacity", 55) + "%)");
   }
+
+  for (var r = 0; r < layerRefs.length; r++) setP(layerRefs[r].effect, layerRefs[r].name, layerRefs[r].layer.index);
 
   // Grain on the CG only (the plate already has its own)
   var grain = beauty.Effects.addProperty("ADBE Add Grain");

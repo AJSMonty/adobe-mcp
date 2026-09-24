@@ -116,15 +116,22 @@ def run():
         if hasattr(sp_bake, "bake_async"):
             for t in sets:
                 sp_bake.bake_async(t)
+            notes.append("bake started (async) for %d set(s)" % len(sets))
         else:
+            # older builds bake the Baking-window selection, not an arbitrary list
+            if wanted is not None and len(sets) < len(sp_ts.all_texture_sets()):
+                raise RuntimeError("This Painter version can only bake the texture sets selected in the Baking "
+                                   "window; select them there, or omit texture_sets")
             sp_bake.bake_selected_textures_async()
-        notes.append("bake started (async) for %d set(s)" % len(sets))
+            notes.append("bake started (async) for the Baking-window selection")
     with sp_ls.ScopedModification("adobe-mcp creature look-dev"):
         for t in sets:
             report.append(look_dev_set(t, notes))
     out = {"texture_sets": report, "notes": notes}
     if P["export_dir"]:
+        import os
         import substance_painter.export as sp_exp
+        os.makedirs(P["export_dir"], exist_ok=True)   # Painter's export fails on a missing folder
         cfg = {
             "exportShaderParams": False,
             "exportPath": P["export_dir"],

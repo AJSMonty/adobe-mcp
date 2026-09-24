@@ -118,7 +118,11 @@ if hasattr(sp_bake, "bake_async"):
     for t in targets:
         sp_bake.bake_async(t); started.append(t.name())
 elif hasattr(sp_bake, "bake_selected_textures_async"):
-    sp_bake.bake_selected_textures_async(); started = [t.name() for t in targets]
+    # older builds bake whatever is selected in the Baking window, not an arbitrary list
+    if wanted is not None and len(targets) < len(sp_ts.all_texture_sets()):
+        raise RuntimeError("This Painter version can only bake the texture sets selected in the Baking window; "
+                           "select them there, or omit texture_sets")
+    sp_bake.bake_selected_textures_async(); started = ["(Baking window selection)"]
 else:
     raise RuntimeError("This Painter version exposes no async baking API")
 result = {"bake_started": started, "notes": notes}
